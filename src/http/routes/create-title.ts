@@ -16,6 +16,7 @@ export const createTitleRoute: FastifyPluginAsyncZod = async (server) => {
       schema: {
         tags: ['titles'],
         summary: 'Create a title',
+        operationId: 'createTitle',
         body: z.object({
           title: z.string().min(5, 'Título precisa ter 5 caracteres'),
           description: z

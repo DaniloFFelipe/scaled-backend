@@ -15,6 +15,7 @@ export const updateTitleRoute: FastifyPluginAsyncZod = async (server) => {
       schema: {
         tags: ['titles'],
         summary: 'Update a title',
+        operationId: 'updateTitle',
         params: z.object({
           id: z.uuid('ID do título inválido'),
         }),

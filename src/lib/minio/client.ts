@@ -1,10 +1,10 @@
-import { env } from '@indy/env';
 import { Client as MinioClient } from 'minio';
+import { env } from '../../env.ts';
 
 export const minio = new MinioClient({
-  endPoint: env.S3_ENDPOINT,
-  port: env.S3_PORT,
+  endPoint: env.STORAGE_ENDPOINT,
+  port: env.STORAGE_PORT,
   useSSL: false,
-  accessKey: env.S3_ACCESS_KEY_ID,
-  secretKey: env.S3_SECRET_ACCESS_KEY,
+  accessKey: env.STORAGE_ACCESS_KEY,
+  secretKey: env.STORAGE_SECRET_KEY,
 });

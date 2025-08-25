@@ -4,7 +4,8 @@
   "linter": {
     "rules": {
       "suspicious": {
-        "useAwait": "off"
+        "useAwait": "off",
+        "noConsole": "off"
       },
       "style": {
         "noMagicNumbers": "off"

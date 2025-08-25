@@ -15,6 +15,8 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
       schema: {
         tags: ['auth'],
         summary: 'Login',
+        operationId: 'login',
+        description: 'Authenticate a user and return a JWT token',
         body: z.object({
           email: z.email(),
           password: z.string(),
@@ -31,7 +33,8 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
       const result = await db
         .select()
         .from(users)
-        .where(eq(users.email, email));
+        .where(eq(users.email, email.toLowerCase()))
+        .limit(1);
 
       if (result.length === 0) {
         return reply.status(400).send({ message: 'Credenciais inválidas.' });

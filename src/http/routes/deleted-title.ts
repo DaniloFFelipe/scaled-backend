@@ -16,6 +16,8 @@ export const deleteTitleRoute: FastifyPluginAsyncZod = async (server) => {
       schema: {
         tags: ['titles'],
         summary: 'Delete a title',
+        operationId: 'deleteTitle',
+        description: 'Delete a title by its ID',
         params: z.object({
           id: z.uuid('ID do título inválido'),
         }),

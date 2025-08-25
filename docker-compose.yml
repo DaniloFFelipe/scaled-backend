@@ -9,3 +9,10 @@ services:
       - "5432:5432"
     volumes:
       - ./docker/setup.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: bitnami/redis:latest
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"

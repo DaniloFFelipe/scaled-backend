@@ -1,9 +1,16 @@
-POST http://localhost:3333/courses
+POST http://localhost:3333/titles
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlOTEzMjkyMC0wYmNhLTQ1NjEtOGQzMC0wN2IxOTc4Yzk5Y2MiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1NTIxNDAwNH0.NshpGUH8kPUSmZJOz2DqhyYW0EOiA-HzYHnikz_PXaU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYzUxOWQzMC00NmVjLTRjNGItOWM4OS04YTZiZjc4YjU2MGMiLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc1NTg5Mzk1Mn0.76HheapxJGcKp09QBivGiuKE5Q5o6DrJ_LIF5CVaTxw
 
 {
-  "title": "Curso de React"
+  "title": "Um Filme",
+  "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  "category": [
+    "Ação"
+  ],
+  "posterUrl": "https://xl.movieposterdb.com/25_08/2025/26581740/xl_weapons-movie-poster_ea3ff1b5.jpg?v=2025-08-22%2002:55:57",
+  "releaseDate": "2023-10-01T00:00:00Z",
+  "locationUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 }
 
 ###
@@ -21,6 +28,6 @@ POST http://localhost:3333/sessions
 Content-Type: application/json
 
 {
-  "email": "Daniel81@yahoo.com",
+  "email": "emanuelly.franco0@bol.com.br",
   "password": "123456"
 }

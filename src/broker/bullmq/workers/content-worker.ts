@@ -8,9 +8,12 @@ import { convertVideoToHLS } from '../../../lib/hls.ts';
 import { minio } from '../../../lib/minio/client.ts';
 import { uploadTmpFolder } from '../../../lib/minio/upload-tmp-folder.ts';
 import { redis } from '../../../lib/redis.ts';
+import { getVideoMetadata } from '../../../lib/video-metadata.ts';
 import type { ContentCreated } from '../../contracts/content-created.ts';
 
 async function processVideo(data: ContentCreated) {
+  console.log('Processing video for content ID:', data.content.id);
+
   await db
     .update(contents)
     .set({ status: 'processing' })
@@ -23,25 +26,39 @@ async function processVideo(data: ContentCreated) {
       .update(contents)
       .set({ status: 'failed' })
       .where(eq(contents.id, data.content.id));
-    return;
+    throw new Error('Failed to convert video to HLS');
   }
 
-  await uploadTmpFolder(minio, convertResult.outputDir, {
+  const { duration } = await getVideoMetadata(data.content.locationUrl);
+  const uploadResult = await uploadTmpFolder(minio, convertResult.outputDir, {
     bucketName: env.STORAGE_BUCKET,
     folderPrefix: data.content.titleId,
     preserveStructure: true,
   });
 
+  if (!uploadResult.success) {
+    await db
+      .update(contents)
+      .set({ status: 'failed' })
+      .where(eq(contents.id, data.content.id));
+    throw new Error('Failed to Upload converted video to MinIO');
+  }
+
   await db
     .update(contents)
-    .set({ status: 'ready', streamUrl: convertResult.masterPlaylist })
+    .set({
+      status: 'ready',
+      durationInSeconds: duration,
+      streamUrl: `${env.STORAGE_BUCKET}/${data.content.titleId}/master.m3u8`,
+    })
     .where(eq(contents.id, data.content.id));
 }
 
 new Worker<ContentCreated>(
   'content',
   async (job) => {
-    if (job.name !== 'created') {
+    console.log(`Processing job ${job.name}`);
+    if (job.name === 'created') {
       await processVideo(job.data);
     }
   },
