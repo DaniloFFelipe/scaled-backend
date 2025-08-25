@@ -10,6 +10,7 @@ import {
 import { env } from './env.ts';
 import { createTitleRoute } from './http/routes/create-title.ts';
 import { deleteTitleRoute } from './http/routes/deleted-title.ts';
+import { listTitlesRoute } from './http/routes/list-titles.ts';
 import { loginRoute } from './http/routes/login.ts';
 import { updateTitleRoute } from './http/routes/update-title.ts';
 
@@ -46,6 +47,7 @@ server.setSerializerCompiler(serializerCompiler);
 
 server.register(loginRoute);
 server.register(createTitleRoute);
+server.register(listTitlesRoute);
 server.register(updateTitleRoute);
 server.register(deleteTitleRoute);
 

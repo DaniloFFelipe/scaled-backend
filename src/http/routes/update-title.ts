@@ -1,8 +1,7 @@
-import { eq } from 'drizzle-orm';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
-import { db } from '../../database/client.ts';
-import { titles } from '../../database/schema.ts';
+
+import { updateTitle } from '../../functions/update-title.ts';
 import { categories } from '../../utils/categories.ts';
 import { checkRequestJWT } from './hooks/check-request-jwt.ts';
 import { checkUserRole } from './hooks/check-user-role.ts';
@@ -42,32 +41,14 @@ export const updateTitleRoute: FastifyPluginAsyncZod = async (server) => {
     },
     async (request, reply) => {
       const { id } = request.params;
-      const { category, description, posterUrl, releaseDate, title } =
-        request.body;
 
-      const titleExists = await db
-        .select()
-        .from(titles)
-        .where(eq(titles.id, id))
-        .limit(1);
+      const result = await updateTitle(id, request.body);
 
-      if (titleExists.length === 0) {
-        return reply.status(404).send({ message: 'Título não encontrado.' });
+      if (!result.success) {
+        return reply.status(404).send({ message: result.message });
       }
 
-      const result = await db
-        .update(titles)
-        .set({
-          title,
-          description,
-          category,
-          posterUrl,
-          releaseDate: releaseDate ? new Date(releaseDate) : undefined,
-        })
-        .where(eq(titles.id, titleExists[0].id))
-        .returning();
-
-      return reply.status(200).send({ titleId: result[0].id });
+      return reply.status(200).send({ titleId: result.titleId });
     }
   );
 };

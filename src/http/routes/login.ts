@@ -1,12 +1,7 @@
-import { verify } from 'argon2';
-import { eq } from 'drizzle-orm';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import jwt from 'jsonwebtoken';
 import z from 'zod';
 
-import { db } from '../../database/client.ts';
-import { users } from '../../database/schema.ts';
-import { env } from '../../env.ts';
+import { login } from '../../functions/login.ts';
 
 export const loginRoute: FastifyPluginAsyncZod = async (server) => {
   server.post(
@@ -30,27 +25,13 @@ export const loginRoute: FastifyPluginAsyncZod = async (server) => {
     async (request, reply) => {
       const { email, password } = request.body;
 
-      const result = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, email.toLowerCase()))
-        .limit(1);
+      const result = await login({ email, password });
 
-      if (result.length === 0) {
-        return reply.status(400).send({ message: 'Credenciais inválidas.' });
+      if (!result.success) {
+        return reply.status(400).send({ message: result.message });
       }
 
-      const user = result[0];
-
-      const doesPasswordsMatch = await verify(user.password, password);
-
-      if (!doesPasswordsMatch) {
-        return reply.status(400).send({ message: 'Credenciais inválidas.' });
-      }
-
-      const token = jwt.sign({ sub: user.id, role: user.role }, env.JWT_SECRET);
-
-      return reply.status(200).send({ token });
+      return reply.status(200).send({ token: result.token });
     }
   );
 };

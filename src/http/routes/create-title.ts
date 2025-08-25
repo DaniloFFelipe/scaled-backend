@@ -1,9 +1,8 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+
 import z from 'zod';
 
-import { BrokerMessages } from '../../broker/message/index.ts';
-import { db } from '../../database/client.ts';
-import { contents, titles } from '../../database/schema.ts';
+import { createTitle } from '../../functions/create-title.ts';
 import { categories } from '../../utils/categories.ts';
 import { checkRequestJWT } from './hooks/check-request-jwt.ts';
 import { checkUserRole } from './hooks/check-user-role.ts';
@@ -35,41 +34,8 @@ export const createTitleRoute: FastifyPluginAsyncZod = async (server) => {
       },
     },
     async (request, reply) => {
-      const {
-        category,
-        description,
-        posterUrl,
-        releaseDate,
-        title,
-        locationUrl,
-      } = request.body;
-
-      const result = await db
-        .insert(titles)
-        .values({
-          title,
-          description,
-          category,
-          posterUrl,
-          releaseDate: new Date(releaseDate),
-        })
-        .returning();
-
-      const content = await db
-        .insert(contents)
-        .values({
-          titleId: result[0].id,
-          locationUrl,
-          durationInSeconds: -1,
-          sizeInBytes: -1,
-        })
-        .returning();
-
-      BrokerMessages.dispatchContentCreated({
-        content: content[0],
-      });
-
-      return reply.status(201).send({ titleId: result[0].id });
+      const { titleId } = await createTitle(request.body);
+      return reply.status(201).send({ titleId });
     }
   );
 };

@@ -12,6 +12,7 @@ const envSchema = z.object({
   STORAGE_ACCESS_KEY: z.string().default('minioadmin'),
   STORAGE_SECRET_KEY: z.string().default('minioadmin'),
   STORAGE_BUCKET: z.string().default('scaled'),
+  CDN_URL: z.url(),
 });
 
 export type Env = z.infer<typeof envSchema>;
